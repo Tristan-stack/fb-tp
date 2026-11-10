@@ -1,0 +1,12 @@
+{
+  "id": "I101",
+  "tenantId": "C01",
+  "siteId": "S01",
+  "title": "Climatisation salle réunion",
+  "priority": 2,
+  "status": "ASSIGNED",
+  "technicianId": "T01",
+  "createdAt": "20/10/2026 10:00",
+  "updatedAt": "2026-10-21T09:00:00Z",
+  "revision": 2
+}

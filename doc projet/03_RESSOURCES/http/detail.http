@@ -1,0 +1,9 @@
+GET /api/intervention/I999 HTTP/1.1
+Host: api.atlas.invalid
+Authorization: Bearer DEMO-U01-C01
+
+# réponse capturée
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"success":false,"error":"not_found"}

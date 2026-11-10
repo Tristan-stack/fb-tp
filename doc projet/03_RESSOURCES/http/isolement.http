@@ -1,0 +1,10 @@
+GET /api/intervention/I200 HTTP/1.1
+Host: api.atlas.invalid
+Authorization: Bearer DEMO-U01-C01
+X-Tenant: C02
+
+# réponse capturée
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"id":"I200","tenantId":"C02","siteId":"S20","title":"Accès local réseau","status":"NEW"}

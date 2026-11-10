@@ -1,0 +1,20 @@
+[
+  {
+    "id": "T01",
+    "tenantId": "C01",
+    "active": true,
+    "name": "Samir"
+  },
+  {
+    "id": "T02",
+    "tenantId": "C02",
+    "active": true,
+    "name": "Alex"
+  },
+  {
+    "id": "T03",
+    "tenantId": "C01",
+    "active": false,
+    "name": "Camille"
+  }
+]

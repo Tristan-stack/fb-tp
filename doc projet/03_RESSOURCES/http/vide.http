@@ -1,0 +1,9 @@
+GET /api/interventions?state=open&site=S03 HTTP/1.1
+Host: api.atlas.invalid
+Authorization: Bearer DEMO-U02-C01
+
+# réponse capturée
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+
+{"success":false,"error":"no_results"}

@@ -1,0 +1,18 @@
+# Deux écrans ont lu I100 revision=2. L'ordre des requêtes est celui ci-dessous.
+PUT /api/intervention/I100 HTTP/1.1
+Host: api.atlas.invalid
+Authorization: Bearer DEMO-U02-C01
+Content-Type: application/json
+
+{"title":"Porte bloquée accueil","priority":"HIGH"}
+
+# réponse capturée : 200 {"success":true}
+### second écran, basé sur revision=2 également
+PUT /api/intervention/I100 HTTP/1.1
+Host: api.atlas.invalid
+Authorization: Bearer DEMO-U02-C01
+Content-Type: application/json
+
+{"title":"Porte accueil à réparer","priority":"NORMAL"}
+
+# réponse capturée : 200 {"success":true}. Relecture : priority=NORMAL.

@@ -1,0 +1,139 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ATLAS wiki historique",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.atlas.invalid"
+    }
+  ],
+  "paths": {
+    "/api/interventions": {
+      "get": {
+        "summary": "GET historique",
+        "responses": {
+          "200": {
+            "description": "Succès selon wiki"
+          }
+        }
+      },
+      "post": {
+        "summary": "POST historique",
+        "responses": {
+          "200": {
+            "description": "Succès selon wiki"
+          }
+        }
+      }
+    },
+    "/api/intervention/{id}": {
+      "get": {
+        "summary": "GET historique",
+        "responses": {
+          "200": {
+            "description": "Succès selon wiki"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      },
+      "put": {
+        "summary": "PUT historique",
+        "responses": {
+          "200": {
+            "description": "Succès selon wiki"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/api/assign": {
+      "get": {
+        "summary": "GET historique",
+        "responses": {
+          "200": {
+            "description": "Succès selon wiki"
+          }
+        }
+      }
+    },
+    "/api/interventions/{id}/history": {
+      "get": {
+        "summary": "GET historique",
+        "responses": {
+          "200": {
+            "description": "Succès selon wiki"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Intervention": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "status",
+          "technicianId"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "CLOSED"
+            ]
+          },
+          "priority": {
+            "type": "string"
+          },
+          "technicianId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "public": true,
+  "apiBase": "https://api.atlas.invalid",
+  "tenantHeader": "C01",
+  "sqlView": "postgresql://demo:FAUX@db.atlas.invalid/atlas?view=interventions",
+  "logAuthorization": true,
+  "note": "Configuration entièrement fictive. Aucun secret réel."
+}

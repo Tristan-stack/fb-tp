@@ -1,0 +1,10 @@
+GET /api/interventions?page=0&size=20 HTTP/1.1
+Host: api.atlas.invalid
+Authorization: Bearer DEMO-U02-C01
+X-Tenant: C01
+
+# réponse capturée le 20 octobre
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"data":[{"id":"I100","title":"Porte bloquée accueil","status":"NEW"}],"currentPage":1,"total":5}

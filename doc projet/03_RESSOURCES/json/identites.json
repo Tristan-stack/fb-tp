@@ -1,0 +1,33 @@
+[
+  {
+    "userId": "U01",
+    "name": "Lina",
+    "tenantId": "C01",
+    "role": "requester"
+  },
+  {
+    "userId": "U02",
+    "name": "Nora",
+    "tenantId": "C01",
+    "role": "planner"
+  },
+  {
+    "userId": "U03",
+    "name": "Samir",
+    "tenantId": "C01",
+    "role": "technician",
+    "technicianId": "T01"
+  },
+  {
+    "userId": "U20",
+    "name": "Zoé",
+    "tenantId": "C02",
+    "role": "requester"
+  },
+  {
+    "userId": "BI01",
+    "name": "bi-c01",
+    "tenantId": "C01",
+    "role": "reporter"
+  }
+]

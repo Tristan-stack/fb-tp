@@ -1,0 +1,9 @@
+GET /api/assign?id=I100&tech=T02 HTTP/1.1
+Host: api.atlas.invalid
+Authorization: Bearer DEMO-U02-C01
+
+# réponse capturée
+HTTP/1.1 200 OK
+Content-Type: text/plain
+
+OK

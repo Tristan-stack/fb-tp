@@ -1,0 +1,22 @@
+[
+  {
+    "id": "S01",
+    "tenantId": "C01",
+    "name": "Strasbourg Centre"
+  },
+  {
+    "id": "S02",
+    "tenantId": "C01",
+    "name": "Schiltigheim"
+  },
+  {
+    "id": "S03",
+    "tenantId": "C01",
+    "name": "Illkirch sans demande"
+  },
+  {
+    "id": "S20",
+    "tenantId": "C02",
+    "name": "Colmar"
+  }
+]

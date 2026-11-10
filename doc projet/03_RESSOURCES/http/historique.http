@@ -1,0 +1,9 @@
+GET /api/interventions/I100/history HTTP/1.1
+Host: api.atlas.invalid
+Authorization: Bearer DEMO-U02-C01
+
+# réponse capturée après deux appels d'affectation identiques
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[{"actorId":"U02","kind":"ASSIGNED","at":"2026-10-22T08:00:00Z"},{"actorId":"U02","kind":"ASSIGNED","at":"2026-10-22T08:00:01Z"}]
