@@ -5,7 +5,8 @@ info:
   description: >-
     Contrat cible des interventions ATLAS. Le tenant et le rôle viennent du jeton validé.
     Aucune requête ne porte de tenant. Les instants sont en UTC, avec les secondes.
-    Les identifiants sont des textes opaques.
+    Les identifiants sont des textes opaques. Une écriture sur une intervention existante
+    exige l'en-tête If-Match avec la révision lue.
 servers:
   - url: https://api.atlas.invalid/api/v2
     description: Domaine fictif du kit, qui ne répond pas.
@@ -15,6 +16,47 @@ tags:
   - name: interventions
 paths:
   /interventions:
+    get:
+      tags: [interventions]
+      operationId: listerInterventions
+      summary: Lister les interventions
+      description: >-
+        Tous les rôles. Un technicien ne reçoit que ses affectations. Les filtres se combinent
+        par ET. Tri fixe : createdAt du plus récent au plus ancien, puis id. Une liste vide est
+        un succès. Un site inconnu ou d'un autre tenant donne une liste vide. Le total ne compte
+        que ce que l'appelant peut voir.
+      parameters:
+        - name: status
+          in: query
+          description: Statut exact. Une autre valeur est refusée (422).
+          schema:
+            $ref: "#/components/schemas/Statut"
+        - name: siteId
+          in: query
+          description: Identifiant du site.
+          schema:
+            type: string
+            minLength: 1
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size"
+      responses:
+        "200":
+          description: Une page d'interventions, éventuellement vide.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListeInterventions"
+              examples:
+                filtreCombine:
+                  externalValue: Exemples_JSON/liste-reponse-200.json
+                vide:
+                  externalValue: Exemples_JSON/liste-reponse-200-vide.json
+        "400":
+          $ref: "#/components/responses/RequeteIllisible"
+        "401":
+          $ref: "#/components/responses/NonAuthentifie"
+        "422":
+          $ref: "#/components/responses/SaisieRefusee"
     post:
       tags: [interventions]
       operationId: creerIntervention
@@ -86,6 +128,159 @@ paths:
           $ref: "#/components/responses/NonAuthentifie"
         "404":
           $ref: "#/components/responses/Introuvable"
+    patch:
+      tags: [interventions]
+      operationId: modifierIntervention
+      summary: Modifier le titre ou la priorité
+      description: >-
+        Rôles : demandeur si l'intervention est NEW ; planificateur si elle est NEW ou ASSIGNED.
+        Un champ absent reste inchangé. null est refusé. Tout autre champ est refusé : le
+        technicien se change par l'affectation, le statut par une transition. Une requête qui
+        ne change rien répond 200 sans nouvelle révision ni événement.
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/InterventionModification"
+            examples:
+              titreSeul:
+                externalValue: Exemples_JSON/modification-requete-valide.json
+      responses:
+        "200":
+          $ref: "#/components/responses/InterventionAJour"
+        "400":
+          $ref: "#/components/responses/RequeteIllisible"
+        "401":
+          $ref: "#/components/responses/NonAuthentifie"
+        "403":
+          $ref: "#/components/responses/RoleInsuffisant"
+        "404":
+          $ref: "#/components/responses/Introuvable"
+        "409":
+          $ref: "#/components/responses/EtatInterdit"
+        "412":
+          $ref: "#/components/responses/RevisionDepassee"
+        "422":
+          $ref: "#/components/responses/SaisieRefusee"
+        "428":
+          $ref: "#/components/responses/IfMatchAbsent"
+  /interventions/{id}/assignment:
+    parameters:
+      - $ref: "#/components/parameters/IdIntervention"
+    put:
+      tags: [interventions]
+      operationId: affecterIntervention
+      summary: Affecter ou réaffecter un technicien
+      description: >-
+        Rôle : planificateur. L'intervention doit être NEW ou ASSIGNED, sinon 409. Le technicien
+        doit être actif et du même tenant : inconnu ou d'un autre tenant, même refus 422.
+        L'intervention passe à ASSIGNED. Répéter la même affectation répond 200 sans rien changer.
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Affectation"
+            examples:
+              valide:
+                externalValue: Exemples_JSON/affectation-requete-valide.json
+      responses:
+        "200":
+          $ref: "#/components/responses/InterventionAJour"
+        "400":
+          $ref: "#/components/responses/RequeteIllisible"
+        "401":
+          $ref: "#/components/responses/NonAuthentifie"
+        "403":
+          $ref: "#/components/responses/RoleInsuffisant"
+        "404":
+          $ref: "#/components/responses/Introuvable"
+        "409":
+          $ref: "#/components/responses/EtatInterdit"
+        "412":
+          $ref: "#/components/responses/RevisionDepassee"
+        "422":
+          $ref: "#/components/responses/SaisieRefusee"
+        "428":
+          $ref: "#/components/responses/IfMatchAbsent"
+  /interventions/{id}/transitions:
+    parameters:
+      - $ref: "#/components/parameters/IdIntervention"
+    post:
+      tags: [interventions]
+      operationId: changerEtat
+      summary: Commencer, terminer ou annuler
+      description: >-
+        Technicien affecté : ASSIGNED vers IN_PROGRESS, puis IN_PROGRESS vers DONE. Demandeur et
+        planificateur : NEW ou ASSIGNED vers CANCELLED. Un rôle qui n'a jamais cette transition
+        reçoit 403. Une transition hors du cycle reçoit 409. ASSIGNED ne s'obtient que par
+        l'affectation.
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Transition"
+            examples:
+              commencer:
+                externalValue: Exemples_JSON/transition-requete-valide.json
+      responses:
+        "200":
+          $ref: "#/components/responses/InterventionAJour"
+        "400":
+          $ref: "#/components/responses/RequeteIllisible"
+        "401":
+          $ref: "#/components/responses/NonAuthentifie"
+        "403":
+          $ref: "#/components/responses/RoleInsuffisant"
+        "404":
+          $ref: "#/components/responses/Introuvable"
+        "409":
+          $ref: "#/components/responses/EtatInterdit"
+        "412":
+          $ref: "#/components/responses/RevisionDepassee"
+        "422":
+          $ref: "#/components/responses/SaisieRefusee"
+        "428":
+          $ref: "#/components/responses/IfMatchAbsent"
+  /interventions/{id}/history:
+    parameters:
+      - $ref: "#/components/parameters/IdIntervention"
+    get:
+      tags: [interventions]
+      operationId: lireHistorique
+      summary: Lire l'historique d'une intervention
+      description: >-
+        Mêmes droits que le détail. Un événement par changement réel, du plus ancien au plus
+        récent. Aucun client ne peut écrire l'historique.
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size"
+      responses:
+        "200":
+          description: Une page d'événements.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Historique"
+              examples:
+                creationPuisAffectation:
+                  externalValue: Exemples_JSON/historique-reponse-200.json
+        "400":
+          $ref: "#/components/responses/RequeteIllisible"
+        "401":
+          $ref: "#/components/responses/NonAuthentifie"
+        "404":
+          $ref: "#/components/responses/Introuvable"
+        "422":
+          $ref: "#/components/responses/SaisieRefusee"
 components:
   securitySchemes:
     jeton:
@@ -104,6 +299,31 @@ components:
         type: string
         minLength: 1
       example: I102
+    Page:
+      name: page
+      in: query
+      description: Numéro de page, à partir de 1. Une page après la fin répond 200 avec items vide.
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    Size:
+      name: size
+      in: query
+      description: Taille de page. Au-delà de 100, la requête est refusée (422).
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: Révision lue, entre guillemets. Absent, 428. Dépassé, 412.
+      schema:
+        type: string
+      example: '"2"'
   headers:
     ETag:
       description: Révision de l'intervention, entre guillemets. À renvoyer dans If-Match pour une écriture.
@@ -111,6 +331,22 @@ components:
         type: string
       example: '"1"'
   responses:
+    InterventionAJour:
+      description: L'intervention après l'écriture.
+      headers:
+        ETag:
+          $ref: "#/components/headers/ETag"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Intervention"
+          examples:
+            titreModifie:
+              externalValue: Exemples_JSON/modification-reponse-200.json
+            affectee:
+              externalValue: Exemples_JSON/affectation-reponse-200.json
+            commencee:
+              externalValue: Exemples_JSON/transition-reponse-200.json
     RequeteIllisible:
       description: Requête illisible, par exemple un JSON cassé.
       content:
@@ -142,8 +378,28 @@ components:
           schema:
             $ref: "#/components/schemas/Probleme"
           examples:
-            introuvable:
+            detailAutreTenant:
               externalValue: Exemples_JSON/detail-reponse-404.json
+            historiqueNonAffecte:
+              externalValue: Exemples_JSON/historique-reponse-404.json
+    EtatInterdit:
+      description: Le rôle a l'action, mais l'état actuel de l'intervention l'interdit.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Probleme"
+          examples:
+            dejaTerminee:
+              externalValue: Exemples_JSON/transition-reponse-409.json
+    RevisionDepassee:
+      description: L'intervention a changé depuis la lecture. Rien n'est écrit.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Probleme"
+          examples:
+            affectationSurAncienneRevision:
+              externalValue: Exemples_JSON/affectation-reponse-412.json
     SaisieRefusee:
       description: Saisie bien formée, mais refusée par une règle.
       content:
@@ -153,6 +409,16 @@ components:
           examples:
             titreTropCourt:
               externalValue: Exemples_JSON/creation-reponse-422.json
+            tailleTropGrande:
+              externalValue: Exemples_JSON/liste-reponse-422.json
+            technicienNonAffectable:
+              externalValue: Exemples_JSON/affectation-reponse-422.json
+    IfMatchAbsent:
+      description: L'écriture n'a pas d'en-tête If-Match.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Probleme"
   schemas:
     Priorite:
       type: string
@@ -206,15 +472,107 @@ components:
           type: string
           minLength: 1
         title:
-          type: string
-          minLength: 5
-          description: >-
-            5 à 120 caractères une fois les espaces du début et de la fin retirés. Le schéma ne
-            vérifie que le minimum brut. Le serveur retire les espaces, puis compte : un titre
-            fait d'espaces est refusé.
+          $ref: "#/components/schemas/TitreSaisi"
         priority:
           $ref: "#/components/schemas/Priorite"
           description: Facultative. Absente, elle vaut NORMAL.
+    InterventionModification:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          $ref: "#/components/schemas/TitreSaisi"
+        priority:
+          $ref: "#/components/schemas/Priorite"
+    TitreSaisi:
+      type: string
+      minLength: 5
+      description: >-
+        5 à 120 caractères une fois les espaces du début et de la fin retirés. Le schéma ne
+        vérifie que le minimum brut. Le serveur retire les espaces, puis compte : un titre
+        fait d'espaces est refusé.
+    Affectation:
+      type: object
+      required: [technicianId]
+      additionalProperties: false
+      properties:
+        technicianId:
+          type: string
+          minLength: 1
+          description: Technicien actif du tenant de l'appelant.
+    Transition:
+      type: object
+      required: [to]
+      additionalProperties: false
+      properties:
+        to:
+          type: string
+          enum: [IN_PROGRESS, DONE, CANCELLED]
+          description: État demandé.
+    ListeInterventions:
+      type: object
+      required: [items, page, size, total, hasNext]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Intervention"
+        page:
+          type: integer
+          minimum: 1
+        size:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+          description: Nombre d'interventions qui répondent aux filtres, dans ce que l'appelant peut voir.
+        hasNext:
+          type: boolean
+          description: Vrai s'il existe une page suivante.
+    Evenement:
+      type: object
+      required: [revision, type, actorId, at]
+      properties:
+        revision:
+          type: integer
+          minimum: 1
+          description: Révision de l'intervention après ce changement.
+        type:
+          type: string
+          enum: [CREATED, UPDATED, ASSIGNED, STARTED, COMPLETED, CANCELLED]
+        actorId:
+          type: string
+          minLength: 1
+          description: Utilisateur qui a fait le changement.
+        at:
+          type: string
+          format: date-time
+          description: Instant du changement, en UTC, avec les secondes.
+        technicianId:
+          type: string
+          description: Technicien choisi. Présent seulement pour un événement ASSIGNED.
+    Historique:
+      type: object
+      required: [items, page, size, total, hasNext]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Evenement"
+        page:
+          type: integer
+          minimum: 1
+        size:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+        hasNext:
+          type: boolean
     Probleme:
       type: object
       required: [type, title, status, code, correlationId]

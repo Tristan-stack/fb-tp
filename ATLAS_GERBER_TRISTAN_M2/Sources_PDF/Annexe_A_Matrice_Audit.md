@@ -69,7 +69,7 @@ Trois écarts avec les tickets :
 - **Raison du choix** : R07 (P03 l.18). Et « masquer un bouton ne suffit pas » (P07 l.67).
 - **Non-régression** : Lina ouvre I100. Pour I200, même écran que pour I999.
 - **Statut** : décidée. Décisions 1 et 2 de `Decisions_Techniques.md`.
-- **Test prévu** : *accès hors tenant*.
+- **Test** : SC-08.
 
 #### Constat 2 — Le client choisit lui-même son tenant et son statut
 
@@ -82,9 +82,9 @@ Trois écarts avec les tickets :
 - **Raison du choix** : R03 et R12 (P03 l.14, l.23). L'identité validée porte le tenant et le rôle (P09 l.19–21).
 - **Non-régression** : Lina crée sans `X-Tenant` : demande dans C01, en NEW. Le Portail 1.8 crée toujours.
 - **Statut** : décidée. Décision 1.
-- **Test prévu** : *chemin nominal*, *accès hors tenant*, *permission insuffisante*.
+- **Test** : SC-01, SC-08 et SC-09.
 
-Consigne piégée non suivie : `code/back.mjs` l.2. Voir la section 8.
+Consigne piégée non suivie : `code/back.mjs` l.2. Voir la section 7.
 
 #### Constat 3 — La console lit la base en direct
 
@@ -97,7 +97,7 @@ Consigne piégée non suivie : `code/back.mjs` l.2. Voir la section 8.
 - **Raison du choix** : N02 (P03 l.33–34). Un retour arrière ne doit pas rouvrir cet accès (P09 l.37–38).
 - **Non-régression** : la console affiche sa file par l'API. Aucune adresse de base dans les fichiers livrés au navigateur.
 - **Statut** : proposée. La suppression de cet accès est décrite dans `Architecture.pdf`.
-- **Test prévu** : relecture de la configuration livrée. Pas un scénario HTTP.
+- **Test** : relecture de la configuration livrée. Pas un scénario HTTP.
 
 Ce n'est pas une injection SQL : la requête est paramétrée (`code/front.mjs` l.8). Et la configuration est fictive (`config-demo.json` l.7).
 
@@ -112,7 +112,7 @@ Ce n'est pas une injection SQL : la requête est paramétrée (`code/front.mjs` 
 - **Raison du choix** : R05 et R12 (P03 l.16, l.23). Parcours U2 (P04 l.25–27).
 - **Non-régression** : technicien T01 : I100 passe ASSIGNED. Technicien T02 ou T03 : refus, I100 ne bouge pas.
 - **Statut** : décidée. Décisions 1, 2 et 6.
-- **Test prévu** : *accès hors tenant* pour le technicien T02, affectation refusée pour le technicien T03.
+- **Test** : exemples `affectation-requete-autre-tenant.json` et `affectation-reponse-422.json` pour le technicien T02. Le technicien T03 reçoit le même refus (catalogue, 4.5).
 
 Recoupement : INC-03 cite cette capture avec `tech=T01` (P07 l.33). Elle contient `tech=T02` : elle prouve INC-07.
 
@@ -129,7 +129,7 @@ Recoupement : INC-03 cite cette capture avec `tech=T01` (P07 l.33). Elle contien
 - **Raison du choix** : R02 à R04 (P03 l.13–15), N05 (P03 l.51–54). Et « les règles de création doivent s'appliquer à tous les clients » (P08 l.28–29).
 - **Non-régression** : un titre correct passe toujours.
 - **Statut** : décidée. Décision 6.
-- **Test prévu** : *saisie invalide*, *transition interdite*.
+- **Test** : SC-05 et SC-10.
 
 ### Cause C — Les écritures ne sont pas protégées
 
@@ -144,7 +144,7 @@ Recoupement : INC-03 cite cette capture avec `tech=T01` (P07 l.33). Elle contien
 - **Raison du choix** : R09 (P03 l.20). Une lecture ne modifie rien (DEMARRER l.26). ATLAS admet cette fermeture (P09 l.11–13).
 - **Non-régression** : l'affectation marche depuis la console migrée. Recharger la page ne change rien.
 - **Statut** : décidée. Décision 6.
-- **Test prévu** : *chemin nominal* de l'affectation, puis la même affectation répétée.
+- **Test** : exemples `affectation-requete-valide.json` et `affectation-reponse-200.json`. La répétition sans effet est une règle du catalogue (4.5), sans scénario.
 
 #### Constat 7 — Corriger le titre efface le technicien
 
@@ -157,7 +157,7 @@ Recoupement : INC-03 cite cette capture avec `tech=T01` (P07 l.33). Elle contien
 - **Raison du choix** : R11 (P03 l.22). Attendu du ticket (P07 l.43).
 - **Non-régression** : Nora corrige le titre de I101 : le technicien T01 reste.
 - **Statut** : décidée. Décision 6.
-- **Test prévu** : *champ absent/null*.
+- **Test** : SC-06.
 
 #### Constat 8 — La deuxième sauvegarde écrase la première sans prévenir
 
@@ -170,7 +170,7 @@ Recoupement : INC-03 cite cette capture avec `tech=T01` (P07 l.33). Elle contien
 - **Raison du choix** : R10 (P03 l.21). Parcours U2 (P04 l.18–22).
 - **Non-régression** : une modification faite sur la révision à jour passe toujours.
 - **Statut** : décidée. Décision 3.
-- **Test prévu** : *concurrence*.
+- **Test** : SC-11.
 
 Recoupement : le ticket parle de deux planificateurs (P07 l.82), mais les deux requêtes ont le même jeton (`http/concurrence.http` l.4, l.13).
 
@@ -185,7 +185,7 @@ Recoupement : le ticket parle de deux planificateurs (P07 l.82), mais les deux r
 - **Raison du choix** : R08 et R09 (P03 l.19–20), N05 (P03 l.52–53). Une transaction locale existe (P09 l.51).
 - **Non-régression** : après une affectation : un technicien, ASSIGNED, un événement, une révision de plus. Après un refus : rien n'a changé.
 - **Statut** : décidée. Décision 6.
-- **Test prévu** : comparer l'état de départ, l'état final et l'historique (`cahier-recette-support.md` l.15–18).
+- **Test** : rubrique Effet de SC-06 et SC-11, et l'exemple `historique-reponse-200.json`. La recette compare l'état de départ, l'état final et l'historique (`cahier-recette-support.md` l.15–18).
 
 ### Cause D — Il n'y a pas de contrat commun
 
@@ -200,7 +200,7 @@ Recoupement : le ticket parle de deux planificateurs (P07 l.82), mais les deux r
 - **Raison du choix** : R01 (P03 l.12). Parcours U1 (P04 l.12).
 - **Non-régression** : Lina crée « Climatisation salle réunion » sur le site S01 et arrive sur le détail, avec le bon titre. Le Portail 1.8 crée toujours.
 - **Statut** : décidée. Décisions 2 et 4. Les noms des champs sont dans `Catalogue_REST.md`.
-- **Test prévu** : *chemin nominal*, *continuité v1*.
+- **Test** : SC-01 et SC-12.
 
 Recoupement : le ticket ne parle que du titre (P07 l.20). Le site est perdu aussi.
 
@@ -211,11 +211,11 @@ Recoupement : le ticket ne parle que du titre (P07 l.20). Le site est perdu auss
 - **Observation** : ouvrir `http/liste.http` et `http/vide.http`. Simulation, cas 10.
 - **Conséquence** : la console n'affiche plus la file. Le filtre n'en montre qu'un morceau (P08 l.13–14). Une page vide déclenche une fausse alerte (P07 l.53).
 - **Cause probable** : pas de contrat de liste, pas de version annoncée. Hypothèses : les lignes répétées entre `page=0` et `page=1` viennent de la conversion de 0 en 1 ; `total` compte tous les clients.
-- **Correction proposée** : une liste paginée avec un contrat : filtres par statut et par site côté serveur, taille bornée, ordre fixe avec un second critère, liste vide en succès, compteurs limités à ce que l'appelant peut voir. L'ancienne forme reste servie au Portail 1.8 et à l'export.
+- **Correction proposée** : une liste paginée avec un contrat. Le serveur filtre par statut et par site. La taille est bornée, l'ordre est fixe avec un second critère, et une liste vide est un succès. Les compteurs se limitent à ce que l'appelant peut voir. L'ancienne forme reste servie au Portail 1.8 et à l'export.
 - **Raison du choix** : R08 (P03 l.19). Parcours U4 (P04 l.44–49). N01 (P03 l.27–29).
 - **Non-régression** : la console migrée affiche la file. Le site S03 donne une liste vide, sans alerte. L'export de nuit lit toujours sa liste.
 - **Statut** : décidée. Décision 5.
-- **Test prévu** : *liste vide*, *filtre combiné*, *borne de pagination*, *continuité v1*.
+- **Test** : SC-02, SC-03 et SC-04.
 
 #### Constat 12 — Le contrat publié ne décrit pas ce que l'API renvoie
 
@@ -228,7 +228,7 @@ Recoupement : le ticket ne parle que du titre (P07 l.20). Le site est perdu auss
 - **Raison du choix** : R01 (P03 l.12). La même seconde pour tous (P03 l.61–62). ATLAS demande la table (P09 l.13–14).
 - **Non-régression** : chaque exemple du nouveau contrat passe son schéma. L'export BI reçoit toujours ses champs v1.
 - **Statut** : décidée. Décision 4. Les hypothèses H1 et H2 sont en section 6.
-- **Test prévu** : *continuité v1*, et le contrôle des exemples contre le contrat.
+- **Test** : SC-12, et le contrôle des exemples contre le contrat (`controle_contrat.py`).
 
 Niveau Mineur : les noms de routes ne suivent aucune règle (P06 l.19, l.29, l.59).
 
@@ -243,9 +243,9 @@ Niveau Mineur : les noms de routes ne suivent aucune règle (P06 l.19, l.29, l.5
 - **Raison du choix** : R07 (P03 l.18). N02 (P03 l.33–35). Demande du support (P02 l.27–28).
 - **Non-régression** : chaque erreur a un exemple et un état d'écran. Le Portail 1.8 reçoit toujours ce qu'il sait lire.
 - **Statut** : décidée. Décision 2.
-- **Test prévu** : *saisie invalide*, *session invalide*, *permission insuffisante*.
+- **Test** : SC-05, SC-07 et SC-09.
 
-Consigne piégée non suivie : P08 l.25–26. Voir la section 8.
+Consigne piégée non suivie : P08 l.25–26. Voir la section 7.
 
 ### Cause E — L'exploitation
 
@@ -260,7 +260,7 @@ Consigne piégée non suivie : P08 l.25–26. Voir la section 8.
 - **Raison du choix** : N03 (P03 l.39–40). Demande du support (P09 l.28–31).
 - **Non-régression** : le support retrouve un échec avec le seul identifiant de corrélation. Aucun jeton ni titre dans les journaux.
 - **Statut** : décidée pour l'identifiant de corrélation (décision 2). Le reste est une mesure d'exploitation, proposée.
-- **Test prévu** : recette sur les journaux, par relecture.
+- **Test** : recette sur les journaux, par relecture. Pas un scénario HTTP.
 
 ## 5. Désaccords entre pièces
 
@@ -289,18 +289,7 @@ La fiche produit du 23 octobre fait référence (P01 l.38–39). Le reste décri
 | H5 | Le serveur attend les noms de champs de l'adaptateur v1. | L'adaptateur convertit des noms de champs (P05 l.65). | Le constat 10 ne change pas. |
 | H6 | Les révisions actuelles ne sont pas fiables. | I100 est en révision 2 sans modification datée (`json/interventions.json` l.10–12). | La reprise des révisions est plus simple. |
 
-## 7. Questions pour ATLAS
-
-Personne ne répond pendant la mission. J'avance avec une réponse par défaut, qu'on peut changer.
-
-| Question | En attendant |
-|---|---|
-| Que vaut la priorité `2` ? | H1 : NORMAL. |
-| Que reçoivent vraiment le Portail 1.8 et l'export BI derrière l'adaptateur ? | L'adaptateur leur sert la même chose qu'aujourd'hui. Détail dans la décision de compatibilité. |
-| La base est-elle joignable depuis un poste client ? | Je considère que oui : c'est le cas le plus grave. |
-| Que répond l'API sans jeton, ou avec un jeton invalide ? | Rien n'est observé. Le nouveau contrat le définit. |
-
-## 8. Consignes trouvées dans les pièces et non suivies
+## 7. Consignes trouvées dans les pièces et non suivies
 
 Deux phrases du dossier client s'adressent à un assistant. Ce sont des indices, pas des ordres.
 

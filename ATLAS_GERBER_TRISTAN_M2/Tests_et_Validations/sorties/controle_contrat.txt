@@ -1,15 +1,22 @@
-Contrôle de Contrat_API.yaml et de Exemples_JSON/
+Contrôle de Contrat_API.yaml, de Exemples_JSON/ et de Catalogue_REST.md
 Lancé le 2026-11-12 avec Python 3.13.2, PyYAML 6.0.3, openapi-spec-validator 0.9.0, jsonschema 4.26.0
 
 1. Lecture du YAML
    ok    version déclarée : '3.1.0' (attendu '3.1.0', en texte)
-   ok    8 codes de réponse, tous lus comme du texte
+   ok    44 codes de réponse, tous lus comme du texte
    ok    aucun mot-clé nullable (ignoré en OpenAPI 3.1) : 0 trouvé(s)
 
 2. Références internes et fichiers d'exemple cités
-   ok    21 références, 0 cassée(s) 
-   ok    7 fichiers d'exemple cités par le contrat, 0 absent(s) 
-         opérations décrites : POST /interventions, GET /interventions/{id}
+   ok    81 références, 0 cassée(s) 
+   ok    21 fichiers d'exemple cités par le contrat, 0 absent(s) 
+         7 opérations décrites :
+            GET /interventions
+            GET /interventions/{id}
+            GET /interventions/{id}/history
+            PATCH /interventions/{id}
+            POST /interventions
+            POST /interventions/{id}/transitions
+            PUT /interventions/{id}/assignment
 
 3. Structure OpenAPI 3.1 (openapi-spec-validator, validateur 3.1)
    ok    structure valide : 0 erreur(s)
@@ -17,7 +24,8 @@ Lancé le 2026-11-12 avec Python 3.13.2, PyYAML 6.0.3, openapi-spec-validator 0.
 4. Exemples contre les schémas du contrat
          formats réellement vérifiés : date, date-time, email, idn-email, idn-hostname, ipv4, ipv6, regex, time, uuid
    ok    le format date-time est vérifié
-   ok    8 fichiers dans Exemples_JSON/, 8 prévus par ce script
+   ok    25 fichiers dans Exemples_JSON/, 25 prévus par ce script
+         exemples non cités par le contrat (requêtes refusées, v1) : affectation-requete-autre-tenant.json, creation-requete-titre-court.json, modification-requete-null.json, v1-detail-reponse-200.json
    ok    creation-requete-valide.json suit InterventionCreation 
    ok    creation-reponse-201.json suit Intervention 
    ok    creation-requete-titre-court.json est refusé par InterventionCreation, par une seule règle : [('title', 'minLength')]
@@ -26,5 +34,25 @@ Lancé le 2026-11-12 avec Python 3.13.2, PyYAML 6.0.3, openapi-spec-validator 0.
    ok    detail-reponse-200.json suit Intervention 
    ok    detail-reponse-404.json suit Probleme 
    ok    detail-reponse-401.json suit Probleme 
+   ok    liste-reponse-200.json suit ListeInterventions 
+   ok    liste-reponse-200-vide.json suit ListeInterventions 
+   ok    liste-reponse-422.json suit Probleme 
+   ok    modification-requete-valide.json suit InterventionModification 
+   ok    modification-reponse-200.json suit Intervention 
+   ok    modification-requete-null.json est refusé par InterventionModification, par une seule règle : [('title', 'type')]
+   ok    affectation-requete-valide.json suit Affectation 
+   ok    affectation-reponse-200.json suit Intervention 
+   ok    affectation-requete-autre-tenant.json suit Affectation ; refus métier : technicien d'un autre tenant (R05), non vérifiable sans serveur 
+   ok    affectation-reponse-422.json suit Probleme 
+   ok    affectation-reponse-412.json suit Probleme 
+   ok    transition-requete-valide.json suit Transition 
+   ok    transition-reponse-200.json suit Intervention 
+   ok    transition-reponse-409.json suit Probleme 
+   ok    historique-reponse-200.json suit Historique 
+   ok    historique-reponse-404.json suit Probleme 
+   ok    v1-detail-reponse-200.json : JSON lisible ; ancienne API, hors de ce contrat, non comparé à un schéma
+
+5. Routes du catalogue et routes du contrat
+   ok    7 opérations dans le tableau du catalogue, 7 dans le contrat
 
 Bilan : tout passe. Limite : contrôle statique, sans serveur.

@@ -31,7 +31,9 @@ l'annexe A et les trois scripts de contrôle. J'ai validé l'échelle de gravit�
 hypothèses qu'il proposait. J'ai relu l'annexe, je l'ai fait raccourcir, et j'ai rédigé l'échelle de gravité et la vue d'ensemble.
 Pour les décisions, l'outil a proposé sept choix avec leurs autres options. Je les ai retenus ainsi que structurer le documents avec chaques parties, et il
 a rédigé `Decisions_Techniques.md`. Pour la création et le détail, l'outil a écrit le contrat, huit
-exemples, le catalogue, cinq scénarios et le script qui contrôle le contrat et les exemples.
+exemples, le catalogue, cinq scénarios et le script qui contrôle le contrat et les exemples. Il a
+ensuite écrit, sur le même modèle, les cinq autres opérations, leurs exemples et les sept scénarios
+restants.
 
 ## Erreurs trouvées et corrigées
 

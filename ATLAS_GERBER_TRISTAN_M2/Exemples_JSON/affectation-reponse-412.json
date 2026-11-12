@@ -1,0 +1,8 @@
+{
+  "type": "https://api.atlas.invalid/problems/precondition-failed",
+  "title": "L'intervention a changé",
+  "status": 412,
+  "detail": "La révision envoyée n'est plus la dernière. Relire l'intervention.",
+  "code": "precondition_failed",
+  "correlationId": "c-e2a5730c"
+}

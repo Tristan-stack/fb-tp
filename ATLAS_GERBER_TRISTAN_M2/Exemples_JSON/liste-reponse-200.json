@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "id": "I100",
+      "siteId": "S01",
+      "title": "Porte bloquée accueil",
+      "priority": "NORMAL",
+      "status": "NEW",
+      "technicianId": null,
+      "createdAt": "2026-10-20T08:00:00Z",
+      "updatedAt": "2026-10-20T08:00:00Z",
+      "revision": 2
+    }
+  ],
+  "page": 1,
+  "size": 20,
+  "total": 1,
+  "hasNext": false
+}

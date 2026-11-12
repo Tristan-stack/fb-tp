@@ -1,0 +1,11 @@
+{
+  "id": "I100",
+  "siteId": "S01",
+  "title": "Porte bloquée accueil",
+  "priority": "NORMAL",
+  "status": "ASSIGNED",
+  "technicianId": "T01",
+  "createdAt": "2026-10-20T08:00:00Z",
+  "updatedAt": "2026-11-12T10:05:00Z",
+  "revision": 3
+}

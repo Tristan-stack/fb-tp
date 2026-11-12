@@ -28,7 +28,7 @@ produit P03. Les pièces P01 à P09 et les fichiers cités sont ceux du kit.
 
 - **Contexte** : un échec répond 200, une liste vide répond 404, une erreur est tantôt du texte, tantôt du JSON (constat 13). Les écrans ne peuvent pas réagir.
 - **Options** : A. Le statut HTTP dit le résultat, avec une forme d'erreur standard (`application/problem+json`, RFC 9457). B. Pareil, avec un format d'erreur maison. C. Garder 200 partout, avec `success` à faux.
-- **Choix** : A, avec la table ci-dessous. Une erreur contient `type`, `title`, `status` et `detail`, plus un `code` stable, un `correlationId` et, pour une saisie refusée, la liste `errors` qui nomme le champ en cause.
+- **Choix** : A, avec la table ci-dessous. Une erreur contient `type`, `title`, `status` et `detail`. S'y ajoutent un `code` stable et un `correlationId`. Pour une saisie refusée, la liste `errors` nomme le champ en cause.
 
 | Ordre | Situation | Statut |
 |---|---|---|
@@ -49,7 +49,7 @@ Conventions communes : identifiants en texte opaque, instants en UTC avec les se
 - **Conséquences** : bénéfice, un écran par situation et un identifiant de corrélation pour le support. Coût, huit cas à tester par opération. Touchés : Console Ops et Terrain, qui changent leur lecture des erreurs. Le Portail 1.8 et l'export gardent la forme v1.
 - **Risques** : un écran qui affiche le même message pour tout, sans lire le `code`. Le 404 commun ne dit pas pourquoi la demande est invisible : c'est voulu.
 - **Réexamen** : si un consommateur ne sait pas lire `problem+json`, ou si une situation ne rentre dans aucune ligne de la table.
-- **Preuve** : avant, `http/detail.http` et `http/vide.http`. Après, un exemple par ligne de la table dans `Exemples_JSON/`.
+- **Preuve** : avant, `http/detail.http` et `http/vide.http`. Après, les exemples de refus de `Exemples_JSON/` : 401, 403, 404, 409, 412 et 422.
 
 ## Décision 3 — Concurrence
 
@@ -75,7 +75,7 @@ Conventions communes : identifiants en texte opaque, instants en UTC avec les se
 
 ## Décision 5 — Pagination et filtres
 
-- **Contexte** : la liste a changé de forme sans prévenir, le filtre par site est fait dans le navigateur, une liste vide répond 404 et l'ordre n'est pas défini (constat 11).
+- **Contexte** : la liste a changé de forme sans prévenir. Le filtre par site est fait dans le navigateur. Une liste vide répond 404, et l'ordre n'est pas défini (constat 11).
 - **Options** : A. Des pages numérotées, avec `page` et `size`. B. Un curseur, avec `limit` et `cursor`.
 - **Choix** : A. `page` commence à 1. `size` vaut 20 par défaut et 100 au plus ; au-delà, 422. La réponse donne `items`, `page`, `size`, `total` et `hasNext`. Une page après la fin répond 200 avec `items` vide. Tri fixe : `createdAt` du plus récent au plus ancien, puis `id`. Filtres `status`, une des cinq valeurs, et `siteId`, combinés par ET. Un site inconnu ou d'un autre client donne une liste vide. Les compteurs ne comptent que ce que l'appelant peut voir.
 - **Justification** : R08 (P03 l.19). Le parcours U4 veut la position et savoir s'il y a une page suivante (P04 l.44–49) : un curseur ne donne pas la position. N04 parle d'une page de 20 (P03 l.46–47).
@@ -86,7 +86,7 @@ Conventions communes : identifiants en texte opaque, instants en UTC avec les se
 
 ## Décision 6 — Modification, affectation et transitions
 
-- **Contexte** : corriger un titre efface le technicien, l'affectation est un GET rejoué par un rechargement, et le statut reçu est enregistré tel quel (constats 5, 6, 7 et 9).
+- **Contexte** : corriger un titre efface le technicien. L'affectation est un GET, rejoué par un rechargement. Le statut reçu est enregistré tel quel (constats 5, 6, 7 et 9).
 - **Options** : A. Trois opérations séparées : modifier, affecter, changer d'état. B. Une seule modification qui accepte tout : titre, technicien et statut.
 - **Choix** : A.
   - Modifier : `PATCH` en `application/merge-patch+json`, sur `title` et `priority` seulement. Un champ absent reste inchangé. `null` est refusé (422). Tout autre champ est refusé (422).

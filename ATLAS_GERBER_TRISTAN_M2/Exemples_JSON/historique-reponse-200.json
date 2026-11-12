@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "revision": 1,
+      "type": "CREATED",
+      "actorId": "U01",
+      "at": "2026-11-12T09:30:00Z"
+    },
+    {
+      "revision": 2,
+      "type": "ASSIGNED",
+      "actorId": "U02",
+      "at": "2026-11-12T09:45:00Z",
+      "technicianId": "T01"
+    }
+  ],
+  "page": 1,
+  "size": 20,
+  "total": 2,
+  "hasNext": false
+}

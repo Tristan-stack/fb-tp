@@ -1,0 +1,8 @@
+{
+  "type": "https://api.atlas.invalid/problems/conflict",
+  "title": "Action impossible dans cet état",
+  "status": 409,
+  "detail": "Une intervention terminée ne change plus d'état.",
+  "code": "conflict",
+  "correlationId": "c-48c0de15"
+}

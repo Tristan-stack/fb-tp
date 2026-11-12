@@ -1,0 +1,14 @@
+{
+  "type": "https://api.atlas.invalid/problems/validation-failed",
+  "title": "Saisie refusée",
+  "status": 422,
+  "code": "validation_failed",
+  "correlationId": "c-64d1a9f0",
+  "errors": [
+    {
+      "field": "technicianId",
+      "code": "not_assignable",
+      "message": "Technicien inconnu ou non affectable."
+    }
+  ]
+}
