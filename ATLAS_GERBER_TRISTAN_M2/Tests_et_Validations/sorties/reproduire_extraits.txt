@@ -1,0 +1,62 @@
+Simulation des extraits code/back.mjs et code/front.mjs, avec des doublures
+Lancé le 2026-11-12 avec Node 24.11.1
+Ce script montre ce que le code fourni permet, pas ce que fait le vrai serveur.
+
+Cas 1 — detail : Lina (C01) demande I200, qui est à C02
+   avec X-Tenant: C01 -> statut 200, tenantId reçu : C02
+   sans X-Tenant      -> statut 200, tenantId reçu : C02
+   Le résultat est le même : detail ne lit ni l'identité ni X-Tenant.
+
+Cas 2 — create : le tenant et le statut viennent de la requête
+   ligne créée : { id: 'I104', tenantId: 'C02', siteId: 'S01', title: 'Demande test', priority: undefined, status: 'DONE', technicianId: undefined }
+   Jeton de Lina (C01), mais tenant C02, statut DONE, et un site de C01.
+
+Cas 3 — create depuis le formulaire de la console (front.create puis back.create)
+   saisi dans le formulaire : priorité NORMAL ; envoyé : { title: 'Climatisation salle réunion', siteId: 'S01', priority: 'HIGH' }
+   ligne créée : { id: 'I104', tenantId: 'C01', siteId: undefined, title: undefined, priority: 'HIGH', status: 'NEW', technicianId: undefined }
+   numéro rendu à l'écran : undefined
+   Le titre et le site sont perdus, la priorité est forcée, le numéro est undefined.
+
+Cas 4 — create : ce qui part dans le journal
+   journal : [ [ 'Bearer DEMO-U02-C01', 'Climatisation salle réunion' ] ]
+   Le jeton et le titre complet sont écrits dans le journal.
+
+Cas 5 — update : Nora corrige seulement le titre de I101
+   avant : { id: 'I101', tenantId: 'C01', siteId: 'S01', title: 'Climatisation salle réunion', priority: 2, status: 'ASSIGNED', technicianId: 'T01' }
+   valeurs passées à la base : { title: 'Climatisation salle réunion étage', priority: undefined, status: undefined, technicianId: null }
+   après : { id: 'I101', tenantId: 'C01', siteId: 'S01', title: 'Climatisation salle réunion étage', priority: 2, status: 'ASSIGNED', technicianId: null }
+   réponse : 200 { success: true }
+   Le technicien passe à null. I101 reste ASSIGNED sans technicien.
+
+Cas 6 — update et create : aucune règle métier côté serveur
+   I103 était DONE ; après update avec status NEW : NEW
+   création avec un titre de cinq espaces : { id: 'I104', tenantId: 'C01', siteId: 'S01', title: '     ', priority: undefined, status: 'NEW', technicianId: undefined }
+   Une intervention terminée repart. Un titre fait d'espaces est accepté, sans priorité par défaut.
+
+Cas 7 — assign : technicien d'un autre client, inactif, inconnu
+   tech=T02 (tenant C02, actif : true) -> 200 'OK' ; I100 : technicien T02, statut ASSIGNED
+   tech=T03 (tenant C01, actif : false) -> 200 'OK' ; I100 : technicien T03, statut ASSIGNED
+   tech=T99 (absent du référentiel) -> 200 'unknown' ; I100 : technicien null, statut NEW
+   T02 (autre client) et T03 (inactif) sont acceptés. Un inconnu reçoit 200 et un texte.
+
+Cas 8 — assign : deux appels identiques, puis une panne au milieu
+   événements après deux appels identiques : [ [ 'I100', 'ASSIGNED' ], [ 'I100', 'ASSIGNED' ] ]
+   Deux événements pour une seule décision, et aucun acteur dans l'événement.
+   panne à la 2e écriture (panne simulée pendant setStatus) : I102 a le technicien T01, le statut NEW, 0 événement
+   La demande a un technicien mais reste NEW, sans trace : les écritures ne sont pas liées.
+
+Cas 9 — update : deux écrans partent de la même révision de I100
+   révision lue par les deux écrans : 2
+   écran 1 (priorité HIGH) -> 200 ; écran 2 (priorité NORMAL) -> 200
+   à la fin : priorité NORMAL, révision 2
+   La priorité HIGH est perdue et personne n'est prévenu. L'extrait ne compare aucune révision.
+
+Cas 10 — front.load : la console lit la liste capturée dans http/liste.http
+   réponse capturée : { data: [ { id: 'I100', title: 'Porte bloquée accueil', status: 'NEW' } ], currentPage: 1, total: 5 }
+   front.load -> 'TypeError : items.map is not a function'
+   même appel avec le tableau seul, filtre S01 -> [ { id: 'I100', title: 'Porte bloquée accueil', status: 'NEW', visible: false } ]
+   La console plante sur l'enveloppe. Et sans siteId dans les lignes, le filtre cache tout.
+
+Cas 11 — front.fastList : la console interroge la base elle-même
+   appel avec C02 -> { texte: 'SELECT * FROM interventions WHERE tenant_id = $1', valeurs: [ 'C02' ] }
+   Le tenant est choisi par l'appelant. La requête est paramétrée : ce n'est pas une injection.

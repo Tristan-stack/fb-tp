@@ -1,0 +1,7 @@
+{
+  "type": "https://api.atlas.invalid/problems/forbidden",
+  "title": "Action non permise pour ce rôle",
+  "status": 403,
+  "code": "forbidden",
+  "correlationId": "c-5e60b1f8"
+}

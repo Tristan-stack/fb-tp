@@ -1,0 +1,25 @@
+Date de I101 : quel instant peut donner ce texte ?
+Lancé le 2026-11-12 avec Node 24.11.1 (ICU 77.1, fuseaux 2025b)
+
+createdAt de I101 dans le kit : "20/10/2026 10:00"
+
+Les autres createdAt du kit, affichés en français dans quatre fuseaux :
+   2026-10-20T08:00:00Z (I100, I102)
+      Europe/Paris      20/10/2026 10:00   <- identique à I101
+      UTC               20/10/2026 08:00
+      America/New_York  20/10/2026 04:00
+      Asia/Tokyo        20/10/2026 17:00
+   2026-10-19T08:00:00Z (I103)
+      Europe/Paris      19/10/2026 10:00
+      UTC               19/10/2026 08:00
+      America/New_York  19/10/2026 04:00
+      Asia/Tokyo        19/10/2026 17:00
+   2026-10-20T09:00:00Z (I200)
+      Europe/Paris      20/10/2026 11:00
+      UTC               20/10/2026 09:00
+      America/New_York  20/10/2026 05:00
+      Asia/Tokyo        20/10/2026 18:00
+
+Résultat : 2026-10-20T08:00:00Z affiché en Europe/Paris.
+Limite : le texte de I101 n'a ni secondes ni fuseau. L'hypothèse est compatible
+avec les données, elle n'est pas prouvée.

@@ -1,0 +1,50 @@
+Contrôle des données v1 contre schemas/intervention-v1.schema.json
+Lancé le 2026-11-12 avec Python 3.13.2 et jsonschema 4.26.0
+
+1. Forme des objets (types, champs obligatoires, valeurs permises)
+   json/interventions.json I100 : 3 écart(s)
+      id : 'I100' is not of type 'integer'
+      status : 'NEW' is not one of ['OPEN', 'CLOSED']
+      technicianId : None is not of type 'string'
+   json/interventions.json I101 : 3 écart(s)
+      id : 'I101' is not of type 'integer'
+      priority : 2 is not of type 'string'
+      status : 'ASSIGNED' is not one of ['OPEN', 'CLOSED']
+   json/interventions.json I102 : 3 écart(s)
+      id : 'I102' is not of type 'integer'
+      status : 'NEW' is not one of ['OPEN', 'CLOSED']
+      technicianId : None is not of type 'string'
+   json/interventions.json I103 : 2 écart(s)
+      id : 'I103' is not of type 'integer'
+      status : 'DONE' is not one of ['OPEN', 'CLOSED']
+   json/interventions.json I200 : 3 écart(s)
+      id : 'I200' is not of type 'integer'
+      status : 'NEW' is not one of ['OPEN', 'CLOSED']
+      technicianId : None is not of type 'string'
+   json/detail-reponse.json I101 : 3 écart(s)
+      id : 'I101' is not of type 'integer'
+      priority : 2 is not of type 'string'
+      status : 'ASSIGNED' is not one of ['OPEN', 'CLOSED']
+   Bilan : 0 objet(s) conforme(s) sur 6, 17 écarts.
+
+2. Format des dates : ce que jsonschema vérifie vraiment sur ce poste
+   Formats vérifiés : date, date-time, email, idn-email, idn-hostname, ipv4, ipv6, regex, time, uuid
+   date-time est vérifié (paquet rfc3339-validator présent).
+   json/interventions.json I100 : createdAt = '2026-10-20T08:00:00Z' ; instant UTC complet : oui ; signalé par jsonschema : non
+   json/interventions.json I101 : createdAt = '20/10/2026 10:00' ; instant UTC complet : NON ; signalé par jsonschema : oui
+   json/interventions.json I102 : createdAt = '2026-10-20T08:00:00Z' ; instant UTC complet : oui ; signalé par jsonschema : non
+   json/interventions.json I103 : createdAt = '2026-10-19T08:00:00Z' ; instant UTC complet : oui ; signalé par jsonschema : non
+   json/interventions.json I200 : createdAt = '2026-10-20T09:00:00Z' ; instant UTC complet : oui ; signalé par jsonschema : non
+   json/detail-reponse.json I101 : createdAt = '20/10/2026 10:00' ; instant UTC complet : NON ; signalé par jsonschema : oui
+   « instant UTC complet » est contrôlé par ce script (AAAA-MM-JJTHH:MM:SSZ), pour ne pas
+   dépendre de ce que jsonschema vérifie ou non.
+
+3. Faits relevés dans json/interventions.json
+   Interventions : 5 en tout ; par tenant : C01 = 4, C02 = 1
+   Type de priority : I100 = 'NORMAL' (str), I101 = 2 (int), I102 = 'LOW' (str), I103 = 'HIGH' (str), I200 = 'NORMAL' (str)
+   Statuts présents : ASSIGNED, DONE, NEW
+   Statuts du schéma publié : OPEN, CLOSED
+   Statuts de la fiche produit (P03 R04) : NEW, ASSIGNED, IN_PROGRESS, DONE, CANCELLED
+   Même createdAt (2026-10-20T08:00:00Z) : I100, I102
+   I100 : révision 2 alors que updatedAt est égal à createdAt
+   technicianId à null : I100, I102, I200

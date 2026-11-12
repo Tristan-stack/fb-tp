@@ -1,0 +1,264 @@
+openapi: "3.1.0"
+info:
+  title: API ATLAS des interventions
+  version: "2.0.0"
+  description: >-
+    Contrat cible des interventions ATLAS. Le tenant et le rôle viennent du jeton validé.
+    Aucune requête ne porte de tenant. Les instants sont en UTC, avec les secondes.
+    Les identifiants sont des textes opaques.
+servers:
+  - url: https://api.atlas.invalid/api/v2
+    description: Domaine fictif du kit, qui ne répond pas.
+security:
+  - jeton: []
+tags:
+  - name: interventions
+paths:
+  /interventions:
+    post:
+      tags: [interventions]
+      operationId: creerIntervention
+      summary: Créer une intervention
+      description: >-
+        Rôles : demandeur, planificateur. Le serveur fixe le statut NEW, aucun technicien,
+        la révision 1, les dates et l'auteur. Il écrit un événement de création dans l'historique.
+        Le site doit appartenir au tenant de l'appelant : un site inconnu ou d'un autre tenant
+        reçoit le même refus 422.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InterventionCreation"
+            examples:
+              valide:
+                externalValue: Exemples_JSON/creation-requete-valide.json
+      responses:
+        "201":
+          description: Intervention créée.
+          headers:
+            Location:
+              description: Adresse du détail de l'intervention créée.
+              schema:
+                type: string
+            ETag:
+              $ref: "#/components/headers/ETag"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Intervention"
+              examples:
+                creee:
+                  externalValue: Exemples_JSON/creation-reponse-201.json
+        "400":
+          $ref: "#/components/responses/RequeteIllisible"
+        "401":
+          $ref: "#/components/responses/NonAuthentifie"
+        "403":
+          $ref: "#/components/responses/RoleInsuffisant"
+        "422":
+          $ref: "#/components/responses/SaisieRefusee"
+  /interventions/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdIntervention"
+    get:
+      tags: [interventions]
+      operationId: lireIntervention
+      summary: Lire le détail d'une intervention
+      description: >-
+        Rôles : demandeur, planificateur et tiers de reporting pour les interventions de leur
+        tenant ; technicien pour celles qui lui sont affectées. Une intervention inexistante,
+        d'un autre tenant ou non affectée au technicien reçoit le même 404.
+      responses:
+        "200":
+          description: Détail de l'intervention.
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Intervention"
+              examples:
+                trouvee:
+                  externalValue: Exemples_JSON/detail-reponse-200.json
+        "401":
+          $ref: "#/components/responses/NonAuthentifie"
+        "404":
+          $ref: "#/components/responses/Introuvable"
+components:
+  securitySchemes:
+    jeton:
+      type: http
+      scheme: bearer
+      description: >-
+        Jeton délivré par le fournisseur d'identité d'ATLAS. Il porte l'utilisateur, son tenant
+        et son rôle. Les jetons DEMO du kit sont des marqueurs sans pouvoir.
+  parameters:
+    IdIntervention:
+      name: id
+      in: path
+      required: true
+      description: Identifiant opaque de l'intervention.
+      schema:
+        type: string
+        minLength: 1
+      example: I102
+  headers:
+    ETag:
+      description: Révision de l'intervention, entre guillemets. À renvoyer dans If-Match pour une écriture.
+      schema:
+        type: string
+      example: '"1"'
+  responses:
+    RequeteIllisible:
+      description: Requête illisible, par exemple un JSON cassé.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Probleme"
+    NonAuthentifie:
+      description: Jeton absent ou invalide.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Probleme"
+          examples:
+            sansJeton:
+              externalValue: Exemples_JSON/detail-reponse-401.json
+    RoleInsuffisant:
+      description: Le rôle de l'appelant n'a jamais cette action.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Probleme"
+          examples:
+            reportingQuiCree:
+              externalValue: Exemples_JSON/creation-reponse-403.json
+    Introuvable:
+      description: Intervention inexistante, ou hors de ce que l'appelant peut voir.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Probleme"
+          examples:
+            introuvable:
+              externalValue: Exemples_JSON/detail-reponse-404.json
+    SaisieRefusee:
+      description: Saisie bien formée, mais refusée par une règle.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Probleme"
+          examples:
+            titreTropCourt:
+              externalValue: Exemples_JSON/creation-reponse-422.json
+  schemas:
+    Priorite:
+      type: string
+      enum: [LOW, NORMAL, HIGH]
+    Statut:
+      type: string
+      enum: [NEW, ASSIGNED, IN_PROGRESS, DONE, CANCELLED]
+      description: DONE et CANCELLED sont terminaux.
+    Intervention:
+      type: object
+      required: [id, siteId, title, priority, status, technicianId, createdAt, updatedAt, revision]
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Identifiant opaque et stable.
+        siteId:
+          type: string
+          minLength: 1
+          description: Site du tenant de l'appelant.
+        title:
+          type: string
+          minLength: 5
+          maxLength: 120
+          description: Titre, sans espace au début ni à la fin.
+        priority:
+          $ref: "#/components/schemas/Priorite"
+        status:
+          $ref: "#/components/schemas/Statut"
+        technicianId:
+          type: [string, "null"]
+          description: Technicien affecté. Toujours présent. Vaut null tant que personne n'est affecté.
+        createdAt:
+          type: string
+          format: date-time
+          description: Instant de création, en UTC, avec les secondes.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Instant du dernier changement réel, en UTC, avec les secondes.
+        revision:
+          type: integer
+          minimum: 1
+          description: Vaut 1 à la création, puis augmente de 1 à chaque changement réel.
+    InterventionCreation:
+      type: object
+      required: [siteId, title]
+      additionalProperties: false
+      properties:
+        siteId:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 5
+          description: >-
+            5 à 120 caractères une fois les espaces du début et de la fin retirés. Le schéma ne
+            vérifie que le minimum brut. Le serveur retire les espaces, puis compte : un titre
+            fait d'espaces est refusé.
+        priority:
+          $ref: "#/components/schemas/Priorite"
+          description: Facultative. Absente, elle vaut NORMAL.
+    Probleme:
+      type: object
+      required: [type, title, status, code, correlationId]
+      properties:
+        type:
+          type: string
+          description: Adresse qui nomme le type de problème.
+        title:
+          type: string
+        status:
+          type: integer
+          enum: [400, 401, 403, 404, 409, 412, 422, 428]
+        detail:
+          type: string
+        code:
+          type: string
+          enum:
+            - bad_request
+            - unauthenticated
+            - forbidden
+            - not_found
+            - conflict
+            - precondition_failed
+            - validation_failed
+            - precondition_required
+          description: Code stable, à lire par les écrans.
+        correlationId:
+          type: string
+          minLength: 1
+          description: Identifiant à donner au support. Il ne contient ni jeton ni texte libre.
+        errors:
+          type: array
+          description: Présent pour une saisie refusée. Un élément par champ en cause.
+          items:
+            $ref: "#/components/schemas/ErreurDeChamp"
+    ErreurDeChamp:
+      type: object
+      required: [field, code, message]
+      properties:
+        field:
+          type: string
+          description: Nom du champ refusé.
+        code:
+          type: string
+          description: Code stable de la règle violée.
+        message:
+          type: string

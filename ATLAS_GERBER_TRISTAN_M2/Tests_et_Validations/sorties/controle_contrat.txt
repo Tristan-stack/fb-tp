@@ -1,0 +1,30 @@
+Contrôle de Contrat_API.yaml et de Exemples_JSON/
+Lancé le 2026-11-12 avec Python 3.13.2, PyYAML 6.0.3, openapi-spec-validator 0.9.0, jsonschema 4.26.0
+
+1. Lecture du YAML
+   ok    version déclarée : '3.1.0' (attendu '3.1.0', en texte)
+   ok    8 codes de réponse, tous lus comme du texte
+   ok    aucun mot-clé nullable (ignoré en OpenAPI 3.1) : 0 trouvé(s)
+
+2. Références internes et fichiers d'exemple cités
+   ok    21 références, 0 cassée(s) 
+   ok    7 fichiers d'exemple cités par le contrat, 0 absent(s) 
+         opérations décrites : POST /interventions, GET /interventions/{id}
+
+3. Structure OpenAPI 3.1 (openapi-spec-validator, validateur 3.1)
+   ok    structure valide : 0 erreur(s)
+
+4. Exemples contre les schémas du contrat
+         formats réellement vérifiés : date, date-time, email, idn-email, idn-hostname, ipv4, ipv6, regex, time, uuid
+   ok    le format date-time est vérifié
+   ok    8 fichiers dans Exemples_JSON/, 8 prévus par ce script
+   ok    creation-requete-valide.json suit InterventionCreation 
+   ok    creation-reponse-201.json suit Intervention 
+   ok    creation-requete-titre-court.json est refusé par InterventionCreation, par une seule règle : [('title', 'minLength')]
+   ok    creation-reponse-422.json suit Probleme 
+   ok    creation-reponse-403.json suit Probleme 
+   ok    detail-reponse-200.json suit Intervention 
+   ok    detail-reponse-404.json suit Probleme 
+   ok    detail-reponse-401.json suit Probleme 
+
+Bilan : tout passe. Limite : contrôle statique, sans serveur.
