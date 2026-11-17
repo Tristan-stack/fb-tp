@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 390" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#09090b">
+  <title>Une affectation, de la lecture à l'écriture</title>
+  <defs>
+    <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3f3f46"/></marker>
+  </defs>
+  <rect width="920" height="390" fill="#ffffff"/>
+  <g fill="#fafafa" stroke="#d4d4d8" stroke-width="1.2">
+    <rect x="40" y="16" width="180" height="38" rx="8"/>
+    <rect x="380" y="16" width="180" height="38" rx="8"/>
+    <rect x="710" y="16" width="180" height="38" rx="8"/>
+  </g>
+  <g text-anchor="middle" font-size="13" font-weight="600">
+    <text x="130" y="40">Console Ops (Nora)</text>
+    <text x="470" y="40">API /api/v2</text>
+    <text x="800" y="40">PostgreSQL</text>
+  </g>
+  <g stroke="#d4d4d8" stroke-width="1.2" stroke-dasharray="4 4">
+    <line x1="130" y1="54" x2="130" y2="350"/>
+    <line x1="470" y1="54" x2="470" y2="350"/>
+    <line x1="800" y1="54" x2="800" y2="350"/>
+  </g>
+  <g stroke="#3f3f46" stroke-width="1.3" fill="none" marker-end="url(#f)">
+    <line x1="130" y1="92" x2="470" y2="92"/>
+    <line x1="470" y1="128" x2="130" y2="128" stroke-dasharray="6 4"/>
+    <line x1="130" y1="174" x2="470" y2="174"/>
+    <line x1="470" y1="250" x2="800" y2="250"/>
+    <line x1="800" y1="284" x2="470" y2="284" stroke-dasharray="6 4"/>
+    <line x1="470" y1="322" x2="130" y2="322" stroke-dasharray="6 4"/>
+  </g>
+  <g>
+    <text x="140" y="85">1. GET /interventions/I100, avec le jeton</text>
+    <text x="140" y="121">2. 200, ETag "2", intervention NEW</text>
+    <text x="140" y="167">3. PUT /interventions/I100/assignment, If-Match "2"</text>
+    <text x="480" y="204" font-style="italic" fill="#3f3f46">4. L'API contrôle, dans l'ordre : jeton, visibilité,</text>
+    <text x="480" y="220" font-style="italic" fill="#3f3f46">rôle, révision, état, technicien.</text>
+    <text x="480" y="243">5. Une transaction : technicien, statut, révision, événement</text>
+    <text x="480" y="277">6. Validée</text>
+    <text x="140" y="315">7. 200, ETag "3", intervention ASSIGNED</text>
+    <text x="40" y="376" font-size="11" fill="#3f3f46">Si la révision avait changé entre 2 et 3 : l'API répond 412 à l'étape 4 et n'écrit rien.</text>
+  </g>
+</svg>

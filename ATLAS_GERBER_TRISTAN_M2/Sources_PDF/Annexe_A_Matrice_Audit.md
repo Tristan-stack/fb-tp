@@ -43,7 +43,7 @@ Les priorités des tickets sont l'avis de celui qui déclare (P07 l.3). J'ai tou
 | 13 | Un échec répond 200 : les écrans ne peuvent pas réagir | D | aucun | Important |
 
 Les causes : **A**, le serveur croit ce qu'on lui envoie. **B**, les règles métier sont dans les
-écrans. **C**, les écritures ne sont protégées. **D**, il n'y a aucun  contrat commun. **E**,
+écrans. **C**, les écritures ne sont pas protégées. **D**, il n'y a aucun contrat commun. **E**,
 l'exploitation.
 
 À gravité égale, la cause A passe d'abord : rien d'autre ne tient tant que le serveur ne sait pas qui appelle.
@@ -269,8 +269,8 @@ La fiche produit du 23 octobre fait référence (P01 l.38–39). Le reste décri
 | Sujet | Une pièce dit | Une autre dit | Je retiens |
 |---|---|---|---|
 | Qui porte le tenant | L'en-tête `X-Tenant` (P06 l.10 ; P05 l.29) | L'identité validée (P09 l.19–21) | P09 et R03 |
-| Forme de la liste | Un tableau (P06 l.22) | Une enveloppe (`http/liste.http` l.10) | La capture montre l'existant. La cible reste à écrire. |
-| Statut d'une création | 201 et `Location` (P06 l.41) | 200 (`http/creation.http` l.10) | À fixer dans le contrat |
+| Forme de la liste | Un tableau (P06 l.22) | Une enveloppe (`http/liste.http` l.10) | La capture montre l'existant. La cible est une liste paginée (décision 5). |
+| Statut d'une création | 201 et `Location` (P06 l.41) | 200 (`http/creation.http` l.10) | 201 et `Location` (décision 2) |
 | Type de l'identifiant | Entier (`schemas/intervention-v1.schema.json` l.11–13) | Texte (`json/interventions.json` l.3) | Texte opaque, R01 |
 | Statuts | OPEN et CLOSED (P06 l.75) | NEW, ASSIGNED, DONE (`json/interventions.json` l.8, l.20, l.44) | Les cinq statuts de R04 |
 | Liste vide | 404 (`http/vide.http` l.6 ; P06 l.22–23) | Un résultat normal (P03 l.19) | P03 |

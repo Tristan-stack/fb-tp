@@ -6,9 +6,13 @@ Tristan Gerber, dossier ATLAS. « Je » désigne l'étudiant, « l'outil » l'as
 
 | Source | Auteur ou organisme | Référence | Consultée le | Décision éclairée |
 |---|---|---|---|---|
-| Kit ATLAS, 45 fichiers fictifs | Innov Campus / Ynov Strasbourg | Kit distribué le 27/10/2026 | À compléter par moi | Tout le dossier |
+| Kit ATLAS, 45 fichiers fictifs | Ynov Campus / Ynov Strasbourg | Kit distribué le 27/10/2026 | 27/10/2026 | Tout le dossier |
+| RFC 9110, HTTP Semantics | IETF (R. Fielding, M. Nottingham, J. Reschke) | https://www.rfc-editor.org/rfc/rfc9110.html, sections 15.5.5, 13.1.1 et 9.2.2 | 12/11/2026 | Décision 2 (404 commun), décision 3 (`If-Match`), décision 6 (`PUT` idempotent) |
+| RFC 6585, Additional HTTP Status Codes | IETF (M. Nottingham, R. Fielding) | https://www.rfc-editor.org/rfc/rfc6585.html, section 3 | 12/11/2026 | Décision 3 (statut 428) |
+| RFC 9457, Problem Details for HTTP APIs | IETF (M. Nottingham, E. Wilde, S. Dalal) | https://www.rfc-editor.org/rfc/rfc9457.html, section 3 | 12/11/2026 | Décision 2 (forme des erreurs) |
+| RFC 7396, JSON Merge Patch | IETF (P. Hoffman, J. Snell) | https://www.rfc-editor.org/rfc/rfc7396.html, section 1 | 12/11/2026 | Décision 6 (modification partielle) |
 
-Aucune source externe n'est encore citée. Je relis chaque passage sur la page avant de le citer.
+Je relis chaque passage sur la page avant de le citer.
 
 ## Usage de l'IA
 
@@ -28,12 +32,16 @@ abandonné le 10/11/2026, rien n'en est conservé (voir « Erreurs »). Depuis, 
 du sujet et préparé le plan de travail, `README.md` et ce fichier. J'ai validé le plan et repris ce
 fichier. Pour l'audit, l'outil a relu le kit, relevé les preuves, puis rédigé les 14 fiches de
 l'annexe A et les trois scripts de contrôle. J'ai validé l'échelle de gravité, le classement et les
-hypothèses qu'il proposait. J'ai relu l'annexe, je l'ai fait raccourcir, et j'ai rédigé l'échelle de gravité et la vue d'ensemble.
-Pour les décisions, l'outil a proposé sept choix avec leurs autres options. Je les ai retenus ainsi que structurer le documents avec chaques parties, et il
+hypothèses qu'il proposait. J'ai relu l'annexe, je l'ai raccourcie, et j'ai rédigé l'échelle de gravité et la vue d'ensemble.
+Pour les décisions, l'outil a proposé sept choix avec leurs autres options. Je les ai retenus ainsi que structurer le document avec chaque partie, et il
 a rédigé `Decisions_Techniques.md`. Pour la création et le détail, l'outil a écrit le contrat, huit
 exemples, le catalogue, cinq scénarios et le script qui contrôle le contrat et les exemples. Il a
 ensuite écrit, sur le même modèle, les cinq autres opérations, leurs exemples et les sept scénarios
-restants.
+restants, puis je me suis chargé de l'archi et les trois schémas que l'outil a ensuite corrigés et simplifiés.
+J'ai ensuite structuré les parties du rapport avec chacune leur but et un court résumé de ce qui doit y être et l'outil a ensuite rédigé le rapport en dix parties et le registre de risques.
+L'outil a enfin écrit les cinq diapositives et produit les trois PDF. Il a regardé chaque page et
+rejoué les quatre contrôles depuis une copie du dossier. À ma demande, il a ensuite refait la mise en
+page des trois PDF et les couleurs des schémas, dans le style de shadcn/ui.
 
 ## Erreurs trouvées et corrigées
 
@@ -48,7 +56,8 @@ restants.
 
 ## Pairs
 
-À compléter par moi.
+Contributions de pairs
+J'ai travaillé avec Jeremy Deveney pour comprendre le dossier et ses enjeux. Chacun a ensuite pris ses propres décisions et rédigé son propre rendu.
 
 ## Limites
 
